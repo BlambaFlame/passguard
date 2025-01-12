@@ -8,17 +8,10 @@ bot = telebot.TeleBot(TOKEN)
 # При каждом выключении бота, что логично, чистится
 users = {}
 
+# Глобальный объект клавиатуры из одной кнопки "Назад"
 back_keyboard = telebot.types.InlineKeyboardMarkup()
 back_to_menu_key = telebot.types.InlineKeyboardButton('Назад', callback_data='back_to_menu_key')
 back_keyboard.add(back_to_menu_key)
-
-# Старт бота
-@bot.message_handler(commands=['start'])
-def welcome(message):
-    chat_id = message.chat.id
-    bot.send_message(chat_id, 'Введите своё имя')
-    users[chat_id] = {}
-    bot.register_next_step_handler(message, save_username)
 
 # Хэндлер для регистрации пользователя, работает при
 # отправке любого сообщения после команды /start
@@ -38,8 +31,8 @@ def whoami(message):
     surname = users[chat_id]['surname']
     bot.send_message(chat_id, f'Ваше имя: {name} {surname}')
 
-# Хэндлер для вывода меню
-@bot.message_handler(commands=['menu'])
+# Хэндлер для вывода меню на команду /menu или при старте бота
+@bot.message_handler(commands=['menu', "start"])
 def menu(message):
     chat_id = message.chat.id
 
