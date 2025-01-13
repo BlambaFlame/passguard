@@ -2,9 +2,9 @@
 
 ## Запуск
 
-1. Установить библиотеку telebot:
+1. Установить зависимости:
 ```
-pip install pyTelegramBotAPI
+pip install -r requirements.txt
 ```
 2. Запустить программу:
 ```
