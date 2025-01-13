@@ -1,11 +1,14 @@
+import os
 import hashlib
-import config
+import dotenv
+
+dotenv.load_dotenv()
+
+SALT = os.getenv('SALT')
+
 
 def hash_master_password(password):
     password = password
-    salt = config.SALT
-    password_with_salt = password + salt
+    password_with_salt = password + SALT
     hashed_password = hashlib.sha512(password_with_salt.encode())
     return hashed_password.hexdigest()
-
-    hash_master_password(password)
