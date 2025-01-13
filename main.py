@@ -4,7 +4,6 @@ import dotenv
 import telebot
 from telebot import types
 
-from passwords import hash_master_password
 from db_workers import add_user
 from db_workers import get_all_users
 
@@ -44,7 +43,7 @@ def start_handler(message):
 def password_to_db(message):
     chat_id = message.chat.id
     user_telegram_id = message.from_user.id
-    password = hash_master_password(message.text)
+    # password = hash_master_password(message.text)
     add_user(user_telegram_id, password)
     bot.send_message(chat_id, 'Пароль сохранен. Теперь ты можешь пользоваться ботом')
     menu(message)
