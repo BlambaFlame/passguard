@@ -101,7 +101,7 @@ if __name__ == "__main__":
             save_account_pass(user[0], account[0], account[1])
 
         for x in get_user_accounts_all(user[0]):
-            print(x)
-            print(get_account_pass(user[0], x))
+            print('\t', x)
+            print('\t\t', get_account_pass(user[0], x))
 
 
