@@ -84,14 +84,14 @@ def get_user_accounts_all(tg_uid: str) -> list:
 if __name__ == "__main__":
     users = (
         ('testuser1', 'testpass1'),
-        ('testuser2', 'testpass2')
-        ('testuser3', 'testpass3')
+        ('testuser2', 'testpass2'),
+        ('testuser3', 'testpass3'),
     )
     accounts = (
-        ('github', 'githubpass')
-        ('yandex', 'yandexpass')
-        ('google', 'googlepass')
-        ('steam', 'steampass')
+        ('github', 'githubpass'),
+        ('yandex', 'yandexpass'),
+        ('google', 'googlepass'),
+        ('steam', 'steampass'),
     )
 
     for user in users:
@@ -102,6 +102,6 @@ if __name__ == "__main__":
 
         for x in get_user_accounts_all(user[0]):
             print(x)
-            get_account_pass(user[0], x)
+            print(get_account_pass(user[0], x))
 
 
