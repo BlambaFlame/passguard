@@ -3,6 +3,10 @@ from cryptography.hazmat.primitives import padding
 from cryptography.hazmat.backends import default_backend
 import os
 import base64
+import dotenv
+import hashlib
+
+dotenv.load_dotenv()
 
 # Генерация и хранение ключа (в продакшене храните ключ в защищённом хранилище)
 SECRET_KEY = os.urandom(32)  # 256-битный ключ
@@ -47,6 +51,14 @@ def decrypt_password(encrypted_password):
     password = unpadder.update(padded_password) + unpadder.finalize()
 
     return password.decode()
+
+# Хэширование мастер-пароля, который для входа в бота
+def hash_master_password(password):
+    password = password
+    salt = os.getenv('SALT')
+    password_with_salt = password + salt
+    hashed_password = hashlib.sha512(password_with_salt.encode())
+    return hashed_password.hexdigest()
 
 
 # Пример использования

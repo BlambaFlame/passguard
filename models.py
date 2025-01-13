@@ -1,7 +1,7 @@
 from peewee import *
 import datetime
 
-from passwords import encrypt_password, decrypt_password
+from passwords import encrypt_password, decrypt_password, hash_master_password
 
 db = SqliteDatabase('db/database.sqlite3')
 
@@ -12,7 +12,7 @@ class BaseModel(Model):
 
 
 class User(BaseModel):
-    tg_uid = CharField(primary_key=True)
+    tg_uid = IntegerField(primary_key=True, unique=True)
     password = CharField()
 
 
@@ -27,17 +27,21 @@ db.connect()
 db.create_tables([User, Account])
 
 
-def save_user(tg_uid: str, password: str) -> None:
+def get_users_all() -> list:
+    query = User.select()
+    return [user.tg_uid for user in query]
 
+
+def save_user(tg_uid: int, password: str) -> None:
     user = User(
         tg_uid=tg_uid,
-        password=encrypt_password(password)
+        password=hash_master_password(password)
     )
-    user.save()
+    user.save(force_insert=True)
+    print(saved)
 
 
-def delete_user(tg_uid: str) -> None:
-
+def delete_user(tg_uid: int) -> None:
     query = Account.delete().where(Account.user == tg_uid)
     query.execute()
     user = User.get(tg_uid=tg_uid)

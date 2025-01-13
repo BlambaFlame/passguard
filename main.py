@@ -4,8 +4,8 @@ import dotenv
 import telebot
 from telebot import types
 
-from db_workers import add_user
-from db_workers import get_all_users
+from passwords import hash_master_password
+from models import save_user, get_users_all
 
 dotenv.load_dotenv()
 
@@ -27,7 +27,7 @@ back_keyboard.add(back_to_menu_key)
 @bot.message_handler(commands=['start'])
 def start_handler(message):
     chat_id = message.chat.id
-    ids = get_all_users()
+    ids = get_users_all()
     print(ids)
     if message.from_user.id not in ids:
         bot.send_message(chat_id, 'Привет! Я бот, который поможет тебе хранить пароли в безопасности. Давай зарегистрируемся. Введи пароль, который будешь использовать для разблокирования возможностей бота:')
@@ -43,8 +43,8 @@ def start_handler(message):
 def password_to_db(message):
     chat_id = message.chat.id
     user_telegram_id = message.from_user.id
-    # password = hash_master_password(message.text)
-    add_user(user_telegram_id, password)
+    password = hash_master_password(message.text)
+    save_user(user_telegram_id, password)
     bot.send_message(chat_id, 'Пароль сохранен. Теперь ты можешь пользоваться ботом')
     menu(message)
 
