@@ -5,7 +5,7 @@ import telebot
 from telebot import types
 
 from passwords import hash_master_password
-from models import save_user, get_users_all
+from models import save_user, get_users_all, get_account_pass
 
 dotenv.load_dotenv()
 
@@ -107,11 +107,27 @@ def search_login_by_resource_key(call: types.CallbackQuery) -> None:
         if call.data == 'search_login_by_resource_key':
             chat_id = call.message.chat.id
             message_id = call.message.message_id
-            bot.send_message(call.message.chat.id, "Поиск пока недоступен", reply_markup=back_keyboard)
+            bot.send_message(call.message.chat.id, "Введите название ресурса:")
+            bot.register_next_step_handler(call.message, search_login)
             bot.delete_message(chat_id, message_id)
     except Exception as e:
         print(e)
 
+def search_login(message):
+    try:
+        chat_id = message.chat.id
+        message_id = message.message_id
+        user_id = message.from_user.id
+        resource = message.text
+        password = get_account_pass(user_id, resource)
+        if password:
+            bot.send_message(chat_id, f"Ваш пароль от {resource}: {password}", reply_markup=back_keyboard)
+            bot.delete_message(chat_id, message_id)
+        elif not password:
+            bot.send_message(chat_id, "Пароль не найден, попробуйте ещё раз:")
+            bot.register_next_step_handler(message, search_login)
+    except Exception as e:
+        print(e)
 
 # Хэндлер сохранения пароля
 @bot.callback_query_handler(func=lambda call: call.data.startswith('save_new_login_key'))

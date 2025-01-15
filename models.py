@@ -76,7 +76,7 @@ def update_account_pass(tg_uid: str, account_source: str, password: str) -> None
 
 def get_account_pass(tg_uid: str, account_source: str) -> str | None:
     try:
-        account = Account.get(user=tg_uid, account_source=account_source)
+        account = Account.get(user=tg_uid, account_source=account_source.lower())
         password = decrypt_password(account.password)
     except Account.DoesNotExist:
         password = None
