@@ -5,7 +5,6 @@ import os
 import base64
 import dotenv
 import hashlib
-import string, random
 
 dotenv.load_dotenv()
 
@@ -61,11 +60,6 @@ def hash_master_password(password):
     hashed_password = hashlib.sha512(password_with_salt.encode())
     return hashed_password.hexdigest()
 
-# Генерация пароля
-def generate_password(length=15):
-    characters = string.ascii_letters + string.digits 
-    password = ''.join(random.choice(characters) for _ in range(length))
-    return password
 
 # Пример использования
 if __name__ == "__main__":

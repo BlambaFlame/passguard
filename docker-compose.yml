@@ -1,0 +1,10 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./app:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: python main.py

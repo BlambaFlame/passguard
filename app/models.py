@@ -19,6 +19,7 @@ class User(BaseModel):
 class Account(BaseModel):
     user = ForeignKeyField(User, backref='accounts')
     account_source = CharField()
+    login = CharField()
     created_date = DateTimeField(default=datetime.datetime.now)
     password = CharField()
 
@@ -38,54 +39,49 @@ def save_user(tg_uid: int, password: str) -> None:
         password=hash_master_password(password)
     )
     user.save(force_insert=True)
-    # print(saved)
+    #print(saved)
 
 
-def delete_user(tg_uid: int) -> None:
+def delete_user(tg_uid) -> None:
     query = Account.delete().where(Account.user == tg_uid)
     query.execute()
     user = User.get(tg_uid=tg_uid)
     user.delete_instance()
 
 
-def save_account_pass(tg_uid: str, account_source: str, password: str) -> None:
+def save_account_pass(tg_uid: str, account_source: str, login: str, password: str) -> None:
     account = Account(
         user=tg_uid,
         account_source=account_source.lower(),
+        login=login.lower(),
         password=encrypt_password(password)
     )
     account.save()
 
 
-def delete_account_pass(tg_uid: str, account_source: str) -> None:
-    account = Account(
-        user=tg_uid,
-        account_source=account_source.lower(),
-    )
+def delete_account_pass(account_id: int) -> None:
+    account = Account.get(Account.id == account_id)
     account.delete_instance()
 
 
-def update_account_pass(tg_uid: str, account_source: str, password: str) -> None:
+def update_account_pass(tg_uid: str, account_source: str, login: str, password: str) -> None:
     account = Account(
         user=tg_uid,
         account_source=account_source.lower(),
+        login=login.lower(),
     )
     account.password = encrypt_password(password)
     account.save()
 
 
-def get_account_pass(tg_uid: str, account_source: str) -> str | None:
-    try:
-        account = Account.get(user=tg_uid, account_source=account_source.lower())
-        password = decrypt_password(account.password)
-    except Account.DoesNotExist:
-        password = None
-    return password
+def get_account_pass(tg_uid: str, account_source: str) -> str:
+    account = Account.get(user=tg_uid, account_source=account_source)
+    return account.login, decrypt_password(account.password)
 
 
 def get_user_accounts_all(tg_uid: str) -> list:
-    query = Account.select()
-    return [account.account_source for account in query]
+    query = Account.select().where(Account.user == tg_uid)
+    return [(account.id, account.account_source, account.login) for account in query]
 
 
 # Пример использования
