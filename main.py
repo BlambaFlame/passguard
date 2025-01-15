@@ -3,8 +3,9 @@ import dotenv
 
 import telebot
 from telebot import types
+import telebot.formatting
 
-from passwords import hash_master_password
+from passwords import hash_master_password, generate_password
 from models import save_user, get_users_all, get_account_pass
 
 dotenv.load_dotenv()
@@ -89,11 +90,23 @@ def generate_password_key(call: types.CallbackQuery) -> None:
         if call.data == 'generate_password_key':
             chat_id = call.message.chat.id
             message_id = call.message.message_id
-            bot.send_message(call.message.chat.id, "Генерация пока недоступна", reply_markup=back_keyboard)
+            bot.send_message(chat_id, "Введите название ресурса:")
+            bot.register_next_step_handler(call.message, resource_to_generate)
             bot.delete_message(chat_id, message_id)
     except Exception as e:
         print(e)
 
+def resource_to_generate(message):
+    try:
+        chat_id = message.chat.id
+        message_id = message.message_id
+        resource = message.text
+        password = generate_password()
+        if password:
+            bot.send_message(chat_id, f"Ваш пароль от {resource}: {telebot.formatting.hcode(password)}", reply_markup=back_keyboard, parse_mode='HTML')
+            bot.delete_message(chat_id, message_id)
+    except Exception as e:
+        print(e)
 
 # Хэндлер поиска пароля
 @bot.callback_query_handler(func=lambda call: call.data.startswith('search_login_by_resource_key'))
@@ -102,9 +115,10 @@ def search_login_by_resource_key(call: types.CallbackQuery) -> None:
         if call.data == 'search_login_by_resource_key':
             chat_id = call.message.chat.id
             message_id = call.message.message_id
-            bot.send_message(call.message.chat.id, "Введите название ресурса:")
-            bot.register_next_step_handler(call.message, search_login)
+            temp_message = bot.send_message(call.message.chat.id, "Введите название ресурса:")
             bot.delete_message(chat_id, message_id)
+            bot.register_next_step_handler(call.message, search_login)
+            #bot.delete_message(chat_id, temp_message.message_id)
     except Exception as e:
         print(e)
 
@@ -116,7 +130,7 @@ def search_login(message):
         resource = message.text
         password = get_account_pass(user_id, resource)
         if password:
-            bot.send_message(chat_id, f"Ваш пароль от {resource}: {password}", reply_markup=back_keyboard)
+            bot.send_message(chat_id, f"Ваш пароль от {resource}: {telebot.formatting.hcode(password)}", reply_markup=back_keyboard, parse_mode='HTML')
             bot.delete_message(chat_id, message_id)
         elif not password:
             bot.send_message(chat_id, "Пароль не найден, попробуйте ещё раз:")
