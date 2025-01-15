@@ -60,15 +60,10 @@ def menu(message):
     search_login_by_resource_key = types.InlineKeyboardButton('Найти логин/пароль по названию ресурса', callback_data='search_login_by_resource_key')
     save_new_login_key = types.InlineKeyboardButton('Сохранить новый логин/пароль', callback_data='save_new_login_key')
     delete_login_key = types.InlineKeyboardButton('Удалить логин/пароль', callback_data='delete_login_key')
-    view_all_logins_key = types.InlineKeyboardButton('Посмотреть список сохраненных паролей', callback_data='view_all_logins_key')
-    export_or_import_logins_key = types.InlineKeyboardButton('Экспорт/Импорт сохраненных логинов', callback_data='export_or_import_logins_key')
-    app_settings_key = types.InlineKeyboardButton('Настройки приложения', callback_data='app_settings_key')
 
     # Привязка кнопок к меню
     keyboard.add(generate_password_key, search_login_by_resource_key)
     keyboard.add(save_new_login_key, delete_login_key)
-    keyboard.add(view_all_logins_key, export_or_import_logins_key)
-    keyboard.add(app_settings_key)
     
     # Показ сообщения с кнопками
     bot.send_message(chat_id, 'Выберите пункт меню', reply_markup=keyboard)
@@ -153,46 +148,6 @@ def delete_login_key(call: types.CallbackQuery) -> None:
             bot.delete_message(chat_id, message_id)
     except Exception as e:
         print(e)
-
-
-# Хэндлер просмотра списка паролей
-@bot.callback_query_handler(func=lambda call: call.data.startswith('view_all_logins_key'))
-def view_all_logins_key(call: types.CallbackQuery) -> None:
-    try:
-        if call.data == 'view_all_logins_key':
-            chat_id = call.message.chat.id
-            message_id = call.message.message_id
-            bot.send_message(call.message.chat.id, "Просмотр пока недоступен", reply_markup=back_keyboard)
-            bot.delete_message(chat_id, message_id)
-    except Exception as e:
-        print(e)
-
-
-# Хэндлер экспорта/импорта
-@bot.callback_query_handler(func=lambda call: call.data.startswith('export_or_import_logins_key'))
-def export_or_import_logins_key(call: types.CallbackQuery) -> None:
-    try:
-        if call.data == 'export_or_import_logins_key':
-            chat_id = call.message.chat.id
-            message_id = call.message.message_id
-            bot.send_message(call.message.chat.id, "Экспорт и импорт пока недоступен", reply_markup=back_keyboard)
-            bot.delete_message(chat_id, message_id)
-    except Exception as e:
-        print(e)
-
-
-# Хэндлер настроек бота
-@bot.callback_query_handler(func=lambda call: call.data.startswith('app_settings_key'))
-def app_settings_key(call: types.CallbackQuery) -> None:
-    try:
-        if call.data == 'app_settings_key':
-            chat_id = call.message.chat.id
-            message_id = call.message.message_id
-            bot.send_message(call.message.chat.id, "Настройки пока недоступны", reply_markup=back_keyboard)
-            bot.delete_message(chat_id, message_id)
-    except Exception as e:
-        print(e)
-
 
 # Запуск бота
 if __name__ == '__main__':
